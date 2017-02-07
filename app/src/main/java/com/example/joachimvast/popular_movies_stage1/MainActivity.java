@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     TextView mError;
     RecyclerView mRecyclerView;
     MovieAdapter mAdapter;
-
+    ArrayList<Movie> movielist = new ArrayList<Movie>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         mError = (TextView) findViewById(R.id.tv_error_msg);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_thumb);
 
-        GridLayoutManager manager = new GridLayoutManager(this, GridLayoutManager.DEFAULT_SPAN_COUNT, GridLayoutManager.HORIZONTAL, false);
+        GridLayoutManager manager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.hasFixedSize();
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String results) {
             // If the results from our HTTP request are not null, display the data
             if (results != null && !results.equals("")){
-                ArrayList<Movie> movielist = new ArrayList<Movie>();
+
                 // Parse our JSONString
                 try {
                     // Make an object of our JSON String

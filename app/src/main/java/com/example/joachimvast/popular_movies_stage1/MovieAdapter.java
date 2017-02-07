@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private ArrayList<Movie> mList = new ArrayList<Movie>();
+    private ArrayList<Movie> mList = new ArrayList<>();
 
 
     public void setList(ArrayList<Movie> movielist){
@@ -52,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Movie movie = mList.get(position);
         String thumbnailURL = movie.imagePath;
         Picasso.with(holder.mThumbnail.getContext())
-                .load("thumbnailURL")
+                .load(thumbnailURL)
                 .into(holder.mThumbnail);
     }
 

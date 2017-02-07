@@ -18,12 +18,8 @@ import java.util.ArrayList;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private ArrayList<Movie> mList;
+    private ArrayList<Movie> mList = new ArrayList<Movie>();
 
-    @Override
-    public int getItemCount() {
-        return mList.size();
-    }
 
     public void setList(ArrayList<Movie> movielist){
         this.mList = movielist;
@@ -58,5 +54,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Picasso.with(holder.mThumbnail.getContext())
                 .load("thumbnailURL")
                 .into(holder.mThumbnail);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mList.size();
     }
 }

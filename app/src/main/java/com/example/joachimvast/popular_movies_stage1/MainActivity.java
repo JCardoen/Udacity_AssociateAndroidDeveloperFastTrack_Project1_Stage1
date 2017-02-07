@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new MovieAdapter();
         mRecyclerView.setAdapter(mAdapter);
+
+        makeQuery();
     }
 
     public void makeQuery() {
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String results) {
             // If the results from our HTTP request are not null, display the data
             if (results != null && !results.equals("")){
-                ArrayList<Movie> movielist = new ArrayList();
+                ArrayList<Movie> movielist = new ArrayList<Movie>();
                 // Parse our JSONString
                 try {
                     // Make an object of our JSON String

@@ -10,17 +10,24 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 /**
  * Created by JoachimVAST on 06/02/2017.
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private ImageView[] mThumbnails;
+    private ArrayList<Movie> mList;
 
     @Override
     public int getItemCount() {
-        return mThumbnails.length;
+        return mList.size();
+    }
+
+    public void setList(ArrayList<Movie> movielist){
+        this.mList = movielist;
+        notifyDataSetChanged();
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
@@ -46,12 +53,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapter.MovieAdapterViewHolder holder, int position) {
-        ImageView image = mThumbnails[position];
-        holder.mThumbnail = image;
-    }
-
-    public void setImages(ImageView[] images){
-        mThumbnails = images;
-        notifyDataSetChanged();
+        Movie movie = mList.get(position);
+        String thumbnailURL = movie.imagePath;
+        Picasso.with(holder.mThumbnail.getContext())
+                .load("thumbnailURL")
+                .into(holder.mThumbnail);
     }
 }

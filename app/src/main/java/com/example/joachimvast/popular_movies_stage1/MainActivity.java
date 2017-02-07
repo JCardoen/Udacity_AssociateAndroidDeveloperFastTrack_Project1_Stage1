@@ -1,8 +1,12 @@
 package com.example.joachimvast.popular_movies_stage1;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,20 +19,27 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Create a TextView to display the list of movies from our API
-    TextView mList;
 
     // Error message for feedback to user
     TextView mError;
+
+    RecyclerView mRecyclerView;
+    MovieAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mList = (TextView) findViewById(R.id.tv_movielist);
         mError = (TextView) findViewById(R.id.tv_error_msg);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_thumb);
 
+        GridLayoutManager manager = new GridLayoutManager(this, GridLayoutManager.DEFAULT_SPAN_COUNT, GridLayoutManager.HORIZONTAL, false);
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.hasFixedSize();
+
+        mAdapter = new MovieAdapter();
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     public void makeQuery() {
@@ -37,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayError() {
-        mList.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
         mError.setVisibility(View.VISIBLE);
     }
 
     public void showData() {
         mError.setVisibility(View.INVISIBLE);
-        mList.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     public class MovieQueryTask extends AsyncTask<URL, Void, String> {
@@ -51,20 +62,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(URL... params) {
             URL api = params[0];
-            String result = null;
             String results = null;
             try{
                 results = NetworkUtils.getResponseFromHttpUrl(api);
-                JSONObject response = new JSONObject(results);
-                JSONArray array = response.getJSONArray("results");
-                result = array.getJSONObject(0).getString("original_title");
             } catch (IOException e){
-                e.printStackTrace();
-            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            return result;
+            return results;
         }
 
         @Override
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             // If the results from our HTTP request are not null, display the data
             if (results != null && !results.equals("")){
                 showData();
-                mList.setText(results);
+                mAdapter.set
             }
             else {
                 displayError();

@@ -15,12 +15,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_movielist"
-            android:textSize="20sp"
-            />
+        <android.support.v7.app.AlertController.RecycleListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rv_thumb"></android.support.v7.app.AlertController.RecycleListView>
+
+
+
     </ScrollView>
     <TextView
         android:layout_width="wrap_content"

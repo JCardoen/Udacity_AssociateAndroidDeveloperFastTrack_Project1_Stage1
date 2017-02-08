@@ -18,7 +18,9 @@ public class NetworkUtils {
     // This is our preconfigured base URL
     final static String BASE_URL = "http://api.themoviedb.org/3/movie/";
     final static String QUERY_PARAM = "?";
-    final static String API_KEY = "api_key=91479965ae747f003a32297215d8b122";
+
+    // To insert your own API_KEY, put it after the "api_key="
+    final static String API_KEY = "api_key=";
 
     public static URL buildUrl(String sort) {
     String URL = BASE_URL + sort + QUERY_PARAM + API_KEY;

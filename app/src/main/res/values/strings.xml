@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">popular_movies_stage1</string>
-    <string name="error_msg">Error could not find any popular movies</string>
+    <string name="error_msg">Error could not find any movies</string>
+    <string name="instruction">Please select one of the two options and click search to find movies.</string>
+    <string name="popular">Most Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="search">Search</string>
 </resources>

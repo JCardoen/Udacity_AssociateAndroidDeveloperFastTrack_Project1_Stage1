@@ -16,13 +16,14 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     // This is our preconfigured base URL
-    final static String BASE_URL = "http://api.themoviedb.org/3/movie/popular?api_key=91479965ae747f003a32297215d8b122";
+    final static String BASE_URL = "http://api.themoviedb.org/3/movie/";
+    final static String QUERY_PARAM = "?";
+    final static String API_KEY = "api_key=91479965ae747f003a32297215d8b122";
 
-
-    public static URL buildUrl() {
-
+    public static URL buildUrl(String sort) {
+    String URL = BASE_URL + sort + QUERY_PARAM + API_KEY;
         // Built our URI
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
+        Uri builtUri = Uri.parse(URL).buildUpon()
                 .build();
         URL url = null;
 

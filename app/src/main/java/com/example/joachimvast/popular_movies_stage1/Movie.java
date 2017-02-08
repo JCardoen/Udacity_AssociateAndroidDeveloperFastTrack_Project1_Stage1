@@ -8,38 +8,42 @@ import org.json.JSONObject;
  */
 
 public class Movie {
+
+    // Creation of the fields
     public String title;
     public String release;
     public String overview;
     public JSONObject movie;
     public String imagePath;
-    public int rating;
+    public String rating;
 
-    public Movie (String title, String release, String overview, JSONObject movie, int rating, String imagePath){
-        this.title = title;
-        this.release = release;
-        this.overview = overview;
-        this.movie = movie;
-        this.rating = rating;
-        this.imagePath = imagePath;
-    }
-
-    // Not-default constructor purely based on JSONObjects that we parse from our JSON String from our HTTP Response
+    // Not-default constructor purely based on JSONObjects that we parse from the JSON String received from our HTTP Response
     public Movie (JSONObject movie){
         this.movie = movie;
 
-        // From the JSONObject we get the name-value pairs using the getString() method
+        //  Get the name-value pairs from the JSONObject using the getString() method
         try {
             this.title = movie.getString("original_title");
             this.release = movie.getString("release_date");
             this.overview = movie.getString("overview");
-            this.imagePath += "http://image.tmdb.org/t/p/w185" + movie.getString("poster_path");
-            this.rating = movie.getInt("vote_average");
+            this.imagePath = "http://image.tmdb.org/t/p/w300" + movie.getString("poster_path");
+            this.rating = movie.getString("vote_average");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
-
+    // Create a toString method (debugging purposes)
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "title='" + title + '\'' +
+                ", release='" + release + '\'' +
+                ", overview='" + overview + '\'' +
+                ", movie=" + movie +
+                ", imagePath='" + imagePath + '\'' +
+                ", rating=" + rating +
+                '}';
+    }
 }

@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import org.json.JSONArray;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
 
     // Declare variables
     TextView mError;
-    TextView mInstructions;
+    ScrollView mScrollview;
     RecyclerView mRecyclerView;
     MovieAdapter mAdapter;
     Spinner mSorting;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
         mError = (TextView) findViewById(R.id.tv_error_msg);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_thumb);
         mSorting = (Spinner) findViewById(R.id.spinner_sorting);
+        mScrollview = (ScrollView) findViewById(R.id.sv) ;
 
         // Make an array of String options for our Spinner
         String[] sorting = {"Sort by...","Popularity", "Top Rated"};

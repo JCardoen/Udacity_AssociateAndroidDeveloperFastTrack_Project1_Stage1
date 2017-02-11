@@ -22,10 +22,14 @@
         android:visibility="invisible"
         android:textSize="20sp"
         android:text="@string/error_msg"/>
-<android.support.v7.widget.RecyclerView
+    <ScrollView
+        android:id="@+id/sv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"><android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rv_thumb"/>
+        android:id="@+id/rv_thumb"/></ScrollView>
+
 
 
 </LinearLayout>

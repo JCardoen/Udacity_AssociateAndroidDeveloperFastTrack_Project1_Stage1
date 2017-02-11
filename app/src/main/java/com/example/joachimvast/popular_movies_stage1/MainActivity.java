@@ -4,6 +4,8 @@ package com.example.joachimvast.popular_movies_stage1;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,9 +17,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +34,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.itemClickListener{
+public class MainActivity extends AppCompatActivity implements MovieAdapter.itemClickListener, AdapterView.OnItemSelectedListener{
 
 
     // Declare variables
@@ -37,10 +42,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
     TextView mInstructions;
     RecyclerView mRecyclerView;
     MovieAdapter mAdapter;
-    ArrayList<Movie> movielist = new ArrayList<>();
-    CheckBox mPopular;
-    CheckBox mTop;
-    Button mSearch;
+    Spinner mSorting;
+    ArrayList<Movie> movielist = new ArrayList<Movie>();
+    String sort;
+    Boolean connection;
+    ArrayAdapter<String> sAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +55,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
 
         // Reference ID to each variable
         mError = (TextView) findViewById(R.id.tv_error_msg);
-        mInstructions = (TextView) findViewById(R.id.tv_instruction);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_thumb);
-        mSearch = (Button) findViewById(R.id.btn_search);
-        mPopular = (CheckBox) findViewById(R.id.cb_sortbypopular);
-        mTop = (CheckBox) findViewById(R.id.cb_sortbytop);
+        mSorting = (Spinner) findViewById(R.id.spinner_sorting);
+
+        // Make an array of String options for our Spinner
+        String[] sorting = {"Sort by...","Popularity", "Top Rated"};
+
+        // Initialize the adapter of our Spinner
+        sAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item,sorting);
+        // Set the adapter of our Spinner
+        sAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSorting.setAdapter(sAdapter);
+        mSorting.setOnItemSelectedListener(this);
 
         // Create a LayoutManager for the RecyclerView
         GridLayoutManager manager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
@@ -65,13 +79,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
         // Make a new MovieAdapter object and set the adapter of the RecyclerView to that object
         mAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
+
+        // Start our Query on default it will display all 'popular' movies
+        makeQuery();
+
+        connection = isOnline();
+    }
+
+    // Method to check whether or not the user is connected to the internet
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     // Method for handling click on a thumbnail
     @Override
     public void onItemClick(int clickedItemIndex) {
 
-        // Get the parent contex
+        // Get the parent context
         Context context = MainActivity.this;
 
         // Get the class of destination activity
@@ -93,39 +120,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
     }
 
     // Make a query, called when the Search button is clicked
-    public void makeQuery(View v) {
-
-        /*  Declare the variable that will be passed on in our call to the buildUrl function
-            so we can determine whether to get the most popular or top rated movies
-         */
-        String sort = "";
-
-        // If both checkboxes or none are checked, change the color of the text to red, providing feedback to the user
-        if ((mTop.isChecked() && mPopular.isChecked()) || (!mTop.isChecked() && !mPopular.isChecked())) {
-            mInstructions.setTextColor(Color.parseColor("#ff0000"));
-        }
-        else {
-
-            // If statements to set the value of our sort value
-            if (mPopular.isChecked()){
-                sort = "popular";
-            }
-            if (mTop.isChecked()){
-                sort = "top_rated";
-            }
-
-            // Set the visibility to GONE for unwanted views
-            mPopular.setVisibility(View.GONE);
-            mTop.setVisibility(View.GONE);
-            mInstructions.setVisibility(View.GONE);
-            mSearch.setVisibility(View.GONE);
-
+    public void makeQuery() {
             // Get our URL, pass on the sort variable
-            URL apiUrl = NetworkUtils.buildUrl(sort);
+            URL apiUrl = NetworkUtils.buildUrl(this.sort);
 
             // Make a new MovieQueryTask Object and execute the task
             new MovieQueryTask().execute(apiUrl);
-        }
     }
 
     // Display an error
@@ -138,6 +138,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
     public void showData() {
         mError.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch(position) {
+
+            // Set the String value based on what item of spinner was selected
+            case 0: onNothingSelected(parent);
+            case 1: this.sort = "popular"; makeQuery(); break;
+            case 2: this.sort = "top_rated"; makeQuery(); break;
+            default: break;
+        }
+        movielist.clear();
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        this.sort = "popular";
     }
 
 
@@ -168,41 +187,45 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.item
 
         @Override
         protected void onPostExecute(String results) {
-            // If the results from our HTTP request are not null, display the data
-            if (results != null && !results.equals("")){
-
-                // Parse our JSONString
-                try {
-                    // Make an object of our JSON String
-                    JSONObject object = new JSONObject(results);
-
-                    // Make an array of our JSON Object
-                    JSONArray array = object.getJSONArray("results");
-
-                    // Iterate over each JSONObject and add them to our ArrayList<Movie> variable
-                    for (int i = 0; i < array.length() ; i++){
-
-                        // Create a movie object with the index of the array
-                        Movie movie = new Movie(array.getJSONObject(i));
-                        Log.d("MyActivity",movie.imagePath);
-
-                        // Add the Movie Object to our ArrayList<Movie> movielist
-                        movielist.add(movie);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // Show the JSON data
-                showData();
-
-                // Set the list of our adapter
-                mAdapter.setList(movielist);
+            if (!connection ) {
+                displayError();
             }
             else {
 
-                // Display error
-                displayError();
+                // If the results from our HTTP request are not null, display the data
+                if (results != null && !results.equals("")){
+
+                    // Parse our JSONString
+                    try {
+                        // Make an object of our JSON String
+                        JSONObject object = new JSONObject(results);
+
+                        // Make an array of our JSON Object
+                        JSONArray array = object.getJSONArray("results");
+
+                        // Iterate over each JSONObject and add them to our ArrayList<Movie> variable
+                        for (int i = 0; i < array.length() ; i++){
+
+                            // Create a movie object with the index of the array
+                            Movie movie = new Movie(array.getJSONObject(i));
+                            Log.d("MyActivity",movie.imagePath);
+
+                            // Add the Movie Object to our ArrayList<Movie> movielist
+                            movielist.add(movie);
+                        }
+                        // Show the JSON data
+                        showData();
+
+                        // Set the list of our adapter
+                        mAdapter.setList(movielist);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    // Display error
+                    displayError();
+                }
             }
         }
     }

@@ -19,11 +19,14 @@ public class NetworkUtils {
     final static String BASE_URL = "http://api.themoviedb.org/3/movie/";
     final static String QUERY_PARAM = "?";
 
-    // To insert your own API_KEY, put it after the "api_key="
-    final static String API_KEY = "api_key=";
+
+    final static String API = "api_key=";
+
+    // To insert your own API_KEY, insert it into the KEY variable
+    final static String KEY = "";
 
     public static URL buildUrl(String sort) {
-    String URL = BASE_URL + sort + QUERY_PARAM + API_KEY;
+    String URL = BASE_URL + sort + QUERY_PARAM + API + KEY;
         // Built our URI
         Uri builtUri = Uri.parse(URL).buildUpon()
                 .build();
